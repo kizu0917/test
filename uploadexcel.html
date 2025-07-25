@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <title>Excel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+    input {
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>FileReader()</h2>
+  <input type="file" id="excelFile" accept=".xlsx, .xls">
+  <div id="table-container"></div>
+
+  <!-- SheetJS номын санг оруулж байна -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+  <script>
+    const input = document.getElementById('excelFile');
+    const container = document.getElementById('table-container');
+
+    input.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+
+        // Эхний sheet-ийг авна
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+
+        // Sheet-ийг HTML хүснэгт болгон хөрвүүлнэ
+        const html = XLSX.utils.sheet_to_html(worksheet);
+
+        container.innerHTML = html;
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+  </script>
+
+</body>
+</html>
